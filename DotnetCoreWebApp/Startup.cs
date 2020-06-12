@@ -24,6 +24,10 @@ namespace DotnetCoreWebApp
                     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IPieRepository, PieRepository>();
             services.AddScoped<ICategoryRepository, MockCategoryRepository>();
+            services.AddScoped<ShoppingCart>(sp => ShoppingCart.GetCart(sp));
+            services.AddHttpContextAccessor();
+            services.AddSession();
+
             services.AddMvc();
         }
 
@@ -37,6 +41,7 @@ namespace DotnetCoreWebApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSession();
 
             app.UseMvcWithDefaultRoute();
 
