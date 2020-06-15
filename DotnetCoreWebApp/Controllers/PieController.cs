@@ -19,16 +19,6 @@ namespace DotnetCoreWebApp.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        // GET: /<controller>/
-        public ViewResult List()
-        {
-            var piesListViewModel = new PiesListViewModel();
-            piesListViewModel.CurrentCategory = "Cheese cakes";
-            piesListViewModel.Pies = _pieRepository.AllPies;
-
-            return View(piesListViewModel);
-        }
-
         public ViewResult List(string category)
         {
             IEnumerable<Pie> pies;
@@ -57,6 +47,6 @@ namespace DotnetCoreWebApp.Controllers
             if (pie == null)
                 return NotFound();
             return View(pie);
-        }
+        }        
     }
 }
