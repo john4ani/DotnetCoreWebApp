@@ -1,6 +1,7 @@
 ﻿using DotnetCoreWebApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,13 +23,19 @@ namespace DotnetCoreWebApp
         {
             services.AddDbContext<AppDbContext>(options => 
                     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<AppDbContext>();
+
             services.AddScoped<IPieRepository, PieRepository>();
             services.AddScoped<ICategoryRepository, MockCategoryRepository>();
+
+            services.AddScoped<IOrderRepository, OrderRepository>();
+
             services.AddScoped<ShoppingCart>(sp => ShoppingCart.GetCart(sp));
             services.AddHttpContextAccessor();
             services.AddSession();
 
-            services.AddMvc();
+            services.AddMvc();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,12 +50,14 @@ namespace DotnetCoreWebApp
             app.UseStaticFiles();
             app.UseSession();
 
-            app.UseMvcWithDefaultRoute();
+            app.UseAuthentication();
 
-            //app.Run(async (context) =>
-            //{
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
